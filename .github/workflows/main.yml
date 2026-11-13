@@ -1,0 +1,29 @@
+# .github/workflows/rehost.yml
+name: Rehost IPA
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download IPA zip
+        run: |
+          curl -L -o GTAV-unsigned.ipa.zip \
+            "https://archive.org/download/gtav-unsigned.ipa/GTAV-unsigned.ipa.zip"
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ipa-v1
+          name: "GTAV Unsigned IPA"
+          files: GTAV-unsigned.ipa.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
