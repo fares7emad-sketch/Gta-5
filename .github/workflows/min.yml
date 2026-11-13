@@ -1,0 +1,29 @@
+name: Download Gradle 8.5
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Gradle
+        run: |
+          curl -L -o gradle-8.5-bin.zip \
+            "https://services.gradle.org/distributions/gradle-8.5-bin.zip"
+          ls -lh gradle-8.5-bin.zip
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: gradle-8.5
+          name: "Gradle 8.5 (Binary)"
+          files: gradle-8.5-bin.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
