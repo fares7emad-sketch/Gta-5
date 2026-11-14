@@ -1,0 +1,41 @@
+name: Download Android Dependencies
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Dependencies
+        run: |
+          mkdir -p downloads
+          
+          echo "Downloading appcompat..."
+          curl -L -o downloads/appcompat-1.6.1.aar "https://maven.google.com/androidx/appcompat/appcompat/1.6.1/appcompat-1.6.1.aar"
+          
+          echo "Downloading core-ktx..."
+          curl -L -o downloads/core-ktx-1.12.0.aar "https://maven.google.com/androidx/core/core-ktx/1.12.0/core-ktx-1.12.0.aar"
+          
+          echo "Downloading material..."
+          curl -L -o downloads/material-1.11.0.aar "https://maven.google.com/com/google/android/material/material/1.11.0/material-1.11.0.aar"
+          
+          echo "Downloading circleimageview..."
+          curl -L -o downloads/circleimageview-3.1.0.aar "https://jcenter.bintray.com/de/hdodenhof/circleimageview/3.1.0/circleimageview-3.1.0.aar"
+          
+          ls -lh downloads/
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-libs-v1
+          name: "Android Dependencies (AARs)"
+          files: downloads/*.aar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
