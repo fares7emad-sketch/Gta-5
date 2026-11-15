@@ -1,0 +1,37 @@
+name: Download and Release Tools
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download All Links
+        run: |
+          mkdir -p downloads
+          cd downloads
+
+          curl -L -o gradle-8.1.1-bin.zip "https://services.gradle.org/distributions/gradle-8.1.1-bin.zip"
+          curl -L -o lazarus-ide.html "https://www.lazarus-ide.org"
+          curl -L -o winlibs.html "https://winlibs.com"
+          curl -L -o visualstudio-downloads.html "https://visualstudio.microsoft.com/downloads/"
+          curl -L -o mingw-w64-downloads.html "https://www.mingw-w64.org/downloads/"
+          curl -L -o dotnet-framework-48.html "https://dotnet.microsoft.com/download/dotnet-framework/net48"
+
+          ls -lh
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: tools-bundle-v1
+          name: "Developer Tools & Links Bundle"
+          files: downloads/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
