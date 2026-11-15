@@ -1,0 +1,51 @@
+name: Download and Release Tools
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Tools
+        run: |
+          # 1. Gradle 8.1.1
+          curl -L -o gradle-8.1.1-bin.zip \
+            "https://services.gradle.org/distributions/gradle-8.1.1-bin.zip"
+
+          # 2. Lazarus IDE (ملاحظة: هذا الرابط للصفحة الرئيسية، وقد تحتاج لتوجيهه لرابط التحميل المباشر للنسخة إذا لزم الأمر)
+          # curl -L -o lazarus.html "https://www.lazarus-ide.org"
+
+          # 3. WinLibs (رابط الموقع الرسمي، يفضل وضع رابط التحميل المباشر لملف الـ zip إن وجد)
+          # curl -L -o winlibs.zip "https://winlibs.com"
+
+          # 4. Visual Studio Code (Linux .deb x64)
+          curl -L -o vscode.deb \
+            "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+
+          # 5. MinGW-w64 Downloads
+          # curl -L -o mingw.html "https://www.mingw-w64.org/downloads/"
+
+          # 6. .NET Framework 4.8
+          curl -L -o dotnet-fx-48.exe \
+            "https://go.microsoft.com/fwlink/?linkid=2088631"
+
+          ls -lh
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: developer-tools-v1.0
+          name: "Developer Tools Release"
+          files: |
+            gradle-8.1.1-bin.zip
+            vscode.deb
+            dotnet-fx-48.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
