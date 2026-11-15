@@ -1,0 +1,30 @@
+name: Download VS Code and Release
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download VS Code
+        run: |
+          curl -L -o vscode.deb \
+            "https://code.visualstudio.com/sha/download?build=stable&os=linux-deb-x64"
+
+          ls -lh
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: vscode-v1.0
+          name: "VS Code Release"
+          files: vscode.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
