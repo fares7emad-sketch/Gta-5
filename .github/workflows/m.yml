@@ -1,0 +1,45 @@
+name: Download and Release Tools
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Direct Files
+        run: |
+          mkdir -p downloads
+          cd downloads
+
+          # 1. Gradle 8.1.1
+          curl -L -o gradle-8.1.1-bin.zip "https://services.gradle.org/distributions/gradle-8.1.1-bin.zip"
+
+          # 2. Lazarus IDE (رابط التثبيت المباشر لنظام ويندوز - SourceForge)
+          curl -L -o lazarus-installer.exe "https://sourceforge.net/projects/lazarus/files/Lazarus%20Windows%2064%20bits/Lazarus%203.6/lazarus-3.6-fpc-3.2.2-win64.exe/download"
+
+          # 3. WinLibs GCC (أحدث نسخة لـ MinGW-w64 / GCC على ويندوز بصيغة 7z)
+          curl -L -o winlibs-mingw.7z "https://github.com/brechtsanders/winlibs_mingw/releases/download/14.2.0-12.0.0-12.2.0-ucrt-r2/winlibs-x86_64-posix-seh-gcc-14.2.0-mingw-w64ucrt-12.0.0-r2.7z"
+
+          # 4. Visual Studio Community (مثبت الويب الرسمي لـ VS 2022)
+          curl -L -o vs_community.exe "https://aka.ms/vs/17/release/vs_community.exe"
+
+          # 5. .NET Framework 4.8 (مثبت الويب الرسمي)
+          curl -L -o ndp48-web.exe "https://go.microsoft.com/fwlink/?linkid=2088631"
+
+          ls -lh
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: dev-tools-v1.0
+          name: "Direct Dev Tools Bundle"
+          files: downloads/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
