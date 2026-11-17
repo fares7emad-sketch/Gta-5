@@ -1,0 +1,37 @@
+name: Download and Release VLC
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download VLC
+        run: |
+          mkdir -p downloads
+          cd downloads
+
+          # رابط تحميل VLC 3.0.24 المباشر الجديد
+          curl -L -o vlc-setup.exe "https://get.videolan.org/vlc/3.0.24/win64/vlc-3.0.24-win64.exe"
+
+          ls -lh
+
+      - name: Get Timestamp
+        id: vars
+        run: echo "tag=vlc-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "VLC Media Player 3.0.24 (${{ steps.vars.outputs.tag }})"
+          files: downloads/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
