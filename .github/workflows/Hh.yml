@@ -23,11 +23,15 @@ jobs:
 
           ls -lh
 
+      - name: Get Timestamp
+        id: vars
+        run: echo "tag=vlc-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
       - name: Create Release & Upload
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: vlc-release-v1
-          name: "VLC Media Player Release"
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "VLC Media Player (${{ steps.vars.outputs.tag }})"
           files: downloads/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
