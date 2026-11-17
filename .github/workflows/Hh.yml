@@ -1,0 +1,33 @@
+name: Download and Release VLC
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download VLC
+        run: |
+          mkdir -p downloads
+          cd downloads
+
+          # رابط تحميل VLC المباشر
+          curl -L -o vlc-setup.exe "https://get.videolan.org/vlc/last/win64/vlc-3.0.21-win64.exe"
+
+          ls -lh
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: vlc-release-v1
+          name: "VLC Media Player Release"
+          files: downloads/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
