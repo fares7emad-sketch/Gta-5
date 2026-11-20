@@ -1,0 +1,37 @@
+name: Download and Release Gameloop
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download File
+        run: |
+          mkdir -p downloads
+          cd downloads
+
+          # رابط MediaFire المباشر
+          curl -L -o "Gameloop 32 Bit Offline.exe" "https://www.mediafire.com/file/a1sit43vqz75day/Gameloop+32+Bit+Offline.exe/?dkey=ctx7wz0klrq&r=1414"
+
+          ls -lh
+
+      - name: Get Timestamp
+        id: vars
+        run: echo "tag=gameloop-$(date +'%Y%m%d-%H%M%S')" >> $GITHUB_OUTPUT
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          name: "Gameloop 32 Bit Offline (${{ steps.vars.outputs.tag }})"
+          files: downloads/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
