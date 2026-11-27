@@ -1,0 +1,29 @@
+name: Download Unity 2021.3.56f2
+
+on:
+  workflow_dispatch:
+
+jobs:
+  fetch-and-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download Unity
+        run: |
+          curl -L -o Unity-2021.3.56f2.tar.xz \
+            "https://download.unity3d.com/download_unity/667925324b48/LinuxEditorInstaller/Unity-2021.3.56f2.tar.xz"
+          ls -lh Unity-2021.3.56f2.tar.xz
+
+      - name: Create Release & Upload
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: unity-2021.3.56f2
+          name: "Unity 2021.3.56f2 (Linux Editor)"
+          files: Unity-2021.3.56f2.tar.xz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
