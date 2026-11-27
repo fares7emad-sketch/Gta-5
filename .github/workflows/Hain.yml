@@ -15,15 +15,21 @@ jobs:
 
       - name: Download Unity
         run: |
-          curl -L -o Unity-2021.3.56f2.tar.xz \
+          curl -L --retry 5 --retry-delay 10 --connect-timeout 60 \
+            -o Unity-2021.3.56f2.tar.xz \
             "https://download.unity3d.com/download_unity/667925324b48/LinuxEditorInstaller/Unity-2021.3.56f2.tar.xz"
           ls -lh Unity-2021.3.56f2.tar.xz
+
+      - name: Split into parts
+        run: |
+          split -b 1900m Unity-2021.3.56f2.tar.xz Unity-2021.3.56f2.part
+          ls -lh Unity-2021.3.56f2.part*
 
       - name: Create Release & Upload
         uses: softprops/action-gh-release@v2
         with:
           tag_name: unity-2021.3.56f2
           name: "Unity 2021.3.56f2 (Linux Editor)"
-          files: Unity-2021.3.56f2.tar.xz
+          files: Unity-2021.3.56f2.part*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
